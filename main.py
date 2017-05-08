@@ -11,7 +11,7 @@ import tornado.escape
 import tornado.ioloop
 from tornado.web import RequestHandler, Application, url
 
-from utils import MyPyMysql
+from utils import MyPyMysql, toMB
 
 
 class Main(RequestHandler):
@@ -36,7 +36,7 @@ class Main(RequestHandler):
                                 'server_filename':i['server_filename'],
                                 'url':i['base_url']+i['share_url'],
                                 'publics':'是' if i['public']=='1' else '否',
-                                'size':str(round(i['size']/1048576.0,2)) + 'M'
+                                'size':toMB(i['size'])
                               } for i in result]
             else:
                 tableData = []

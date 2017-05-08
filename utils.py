@@ -48,3 +48,17 @@ class MyPyMysql(object):
 
     def close_connect(self):
         self.connection.close()
+
+
+def toMB(num):
+    """
+    b转换为Mb
+    :param num:
+    :return:
+    """
+    if num < 1024:
+        return str(num) + 'B'
+    elif num < 1024*1024:
+        return str(round(num/1024.0,2)) + 'KB'
+    else:
+        return str(round(num/1048576.0, 2)) + 'M'
