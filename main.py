@@ -36,7 +36,8 @@ class Main(RequestHandler):
                                 'server_filename':i['server_filename'],
                                 'url':i['base_url']+i['share_url'],
                                 'publics':'是' if i['public']=='1' else '否',
-                                'size':toMB(i['size'])
+                                'size':toMB(i['size']),
+                                'uk_url':'https://pan.baidu.com/share/home?uk='+str(i['uk'])
                               } for i in result]
             else:
                 tableData = []
