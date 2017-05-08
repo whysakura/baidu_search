@@ -698,6 +698,8 @@ table.no-margin .progress {
 a {
     color: #20a0ff
 }
+a:visited {color: #1abb9c}
+a:link {color: #20a0ff}
 
 .btn.active.focus, .btn.active:focus, .btn.focus, .btn:active.focus, .btn:active:focus, .btn:focus, :active, :focus, :visited, a, a:active, a:focus, a:visited {
     outline: 0
