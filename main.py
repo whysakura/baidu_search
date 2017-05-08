@@ -36,7 +36,7 @@ class Main(RequestHandler):
                                 'server_filename':i['server_filename'],
                                 'url':i['base_url']+i['share_url'],
                                 'publics':'是' if i['public']=='1' else '否',
-                                'size':i['size']
+                                'size':str(round(i['size']/1048576.0,2)) + 'M'
                               } for i in result]
             else:
                 tableData = []

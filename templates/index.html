@@ -101,12 +101,12 @@
                         <span style="margin-left: 10px" v-text="scope.row.c_time"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="分享人" width="180">
+                <el-table-column label="分享人" width="250">
                     <template scope="scope">
                         <span style="margin-left: 10px" v-text="scope.row.username"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="文件名" >
+                <el-table-column label="文件名" width="250">
                     <template scope="scope">
                         <el-popover trigger="hover" placement="top">
                             <p v-text="scope.row.server_filename">姓名: </p>
@@ -117,13 +117,13 @@
                     </template>
                 </el-table-column>
 
-                <el-table-column label="是否公开" width="100">
+                <el-table-column label="是否公开" >
                     <template scope="scope">
 {#                        <span style="margin-left: 10px" v-text="scope.row.publics"></span>#}
                          <el-tag :type="scope.row.publics === '是' ? '' : 'success'" close-transition v-text="scope.row.publics"></el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column label="大小" >
+                <el-table-column label="大小" width="200">
                     <template scope="scope">
                         <span style="margin-left: 10px" v-text="scope.row.size"></span>
                     </template>
