@@ -64,7 +64,8 @@
         }
     };
     var Ctor = Vue.extend(Main);
-    new Ctor().$mount('#app')
+    var vm = new Ctor().$mount('#app')
+    vm.baiduSearch();
 </script>
 {% end %}
 
@@ -74,9 +75,9 @@
 <div class="" id="app">
     <div class="page-title">
 
-        <div class="title_left" style=" width: 85%;">
+        <div class="title_right">
             <br/>
-            <div class="col-md-5 col-sm-5 col-xs-12 form-group  top_search" style="margin-left: 400px;">
+            <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search" >
                 <div class="input-group">
                     <input type="text" v-on:keyup.enter="baiduSearch" class="form-control" placeholder="Search for..." v-model="searchValue">
                     <span class="input-group-btn">
