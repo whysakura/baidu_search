@@ -144,10 +144,10 @@
         </template>
         <template>
             <br/>
-            <div style="float: right;">
-                <el-pagination @size-change="handleSizeChange" @current-change="handleCurrentChange"
+            <div class="title_right">
+                <el-pagination class="pull-right" @size-change="handleSizeChange" @current-change="handleCurrentChange"
                                 v-bind:current-page="currentPage"
-                               layout="total, prev, pager, next, jumper" :total.sync="totals"  :page-size.sync="pageSize">
+                               layout="total, prev, pager, next" :total.sync="totals"  :page-size.sync="pageSize">
                 </el-pagination>
             </div>
         </template>
