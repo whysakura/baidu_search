@@ -31,7 +31,7 @@ class Main(RequestHandler):
             if not searchvalue:
                 sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit %s,%s ;"""
                 result = pmysql.query(sql,[start,limit])
-                sql = """SELECT count(1) as c FROM pt_db.spide_shares where share_time is not null limit 100;"""
+                sql = """SELECT case when count(1) >100 then 100 else count(1) end as c FROM pt_db.spide_shares where share_time is not null;"""
                 sumcount = pmysql.query(sql)
             else:
                 sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit %s,%s;"""
