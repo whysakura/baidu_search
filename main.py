@@ -29,9 +29,9 @@ class Main(RequestHandler):
             pmysql = MyPyMysql(**mysql_config)
             start = limit*(current_page-1)
             if not searchvalue:
-                sql = """SELECT * FROM pt_db.spide_shares order by share_time desc limit %s,%s ;"""
+                sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit %s,%s ;"""
                 result = pmysql.query(sql,[start,limit])
-                sql = """SELECT case when count(1) >100 then 100 else count(1) end as c FROM pt_db.spide_shares ;"""
+                sql = """SELECT case when count(1) >100 then 100 else count(1) end as c FROM pt_db.spide_shares where share_time is not null;"""
                 sumcount = pmysql.query(sql)
             else:
                 sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit %s,%s;"""
