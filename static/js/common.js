@@ -23,3 +23,7 @@ function scrollup(){
 //        $("html,body").animate({scrollTop:"0px"},100);
 //    });
 }
+
+function clicktotop() {
+    $('body').animate( {scrollTop: 0}, 50);
+}

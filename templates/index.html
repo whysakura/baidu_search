@@ -31,6 +31,7 @@
         },
         methods: {
             baiduSearch: function (val) {
+                clicktotop();
                 this.$http.post('/',
                         {
                             currentPage: val,
