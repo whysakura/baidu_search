@@ -22,12 +22,17 @@ class Main(RequestHandler):
     def post(self):
         try:
             current_page = int(self.get_argument('currentPage'))
-            searchvalue = '%'+self.get_argument('searchValue','.').encode('utf-8')+'%' if  self.get_argument('searchValue','.') else '%.%'
+            searchvalue = '%'+self.get_argument('searchValue','.').encode('utf-8')+'%' if  self.get_argument('searchValue','') else ''
             limit = int(self.get_argument('pageSize'))
             response = {'error':'0'}
             pmysql = MyPyMysql(**mysql_config)
-            sql = """SELECT * FROM pt_db.spide_shares where share_time is not null and server_filename like %s order by share_time desc limit 100 ;"""
-            result = pmysql.query(sql,[searchvalue])
+            if not searchvalue:
+                sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit 100 ;"""
+                result = pmysql.query(sql)
+            else:
+
+                sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit 100 ;"""
+                result = pmysql.query(sql,[searchvalue])
             if result and result is not None:
                 tableData = [{
                                 'id':i['id'],
