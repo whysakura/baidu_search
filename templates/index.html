@@ -34,6 +34,7 @@
             baiduSearch: function (val) {
                 clicktotop();
                 this.loading2=true;
+                NProgress.start(0.4)
                 this.$http.post('/',
                         {
                             currentPage: val,
@@ -44,11 +45,13 @@
                         ,{emulateJSON: true}).then(function (data) {
                         this.loading2=false;
                         this.tableData=data.body['tableData'];
-                        this.totals=data.body['totals']
-                        this.currentPage=val
+                        this.totals=data.body['totals'];
+                        this.currentPage=val;
+                        NProgress.done()
 
                 }, function (response) {
-                    this.currentPage=val
+                    this.currentPage=val;
+                    NProgress.done()
                     this.loading2=false;
                     console.log(response)
                 });

@@ -5,6 +5,7 @@ import os
 import random
 
 import pymysql
+import time
 import tornado.gen
 import tornado.httpclient
 import tornado.escape
@@ -26,13 +27,17 @@ class Main(RequestHandler):
             limit = int(self.get_argument('pageSize'))
             response = {'error':'0'}
             pmysql = MyPyMysql(**mysql_config)
+            start = limit*(current_page-1)
             if not searchvalue:
-                sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit 100 ;"""
-                result = pmysql.query(sql)
+                sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit %s,%s ;"""
+                result = pmysql.query(sql,[start,limit])
+                sql = """SELECT count(1) as c FROM pt_db.spide_shares where share_time is not null ;"""
+                sumcount = pmysql.query(sql)
             else:
-
-                sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc;"""
-                result = pmysql.query(sql,[searchvalue])
+                sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit %s,%s;"""
+                result = pmysql.query(sql,[searchvalue,start,limit])
+                sql = """SELECT count(1) as c FROM pt_db.spide_shares where server_filename like %s ;"""
+                sumcount = pmysql.query(sql,[searchvalue])
             if result and result is not None:
                 tableData = [{
                                 'id':i['id'],
@@ -49,10 +54,8 @@ class Main(RequestHandler):
                               } for i in result]
             else:
                 tableData = []
-            start = limit*(current_page-1)
-            end = limit*(current_page)
-            response['tableData'] = tableData[start:end]
-            response['totals'] = len(tableData)
+            response['tableData'] = tableData
+            response['totals'] = sumcount[0]['c']
             self.write(json.dumps(response))
         except Exception as e:
             mylog.error(e)
