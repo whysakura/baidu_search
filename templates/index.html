@@ -68,9 +68,11 @@
                 console.log(`每页 ${val} 条`);
             },
             handleCurrentChange(val) {
-                this.currentPage = val;
-                this.baiduSearch(val);
-                console.log(`当前页: ${val}`);
+                if(val!==this.currentPage){
+                    this.currentPage = val;
+                    this.baiduSearch(val);
+                    console.log(`当前页: ${val}`);
+                }
             },
             loading2: true
         }
