@@ -26,7 +26,7 @@ class Main(RequestHandler):
             limit = int(self.get_argument('pageSize'))
             response = {'error':'0'}
             pmysql = MyPyMysql(**mysql_config)
-            sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit 300 ;"""
+            sql = """SELECT * FROM pt_db.spide_shares where share_time is not null and server_filename like %s order by share_time desc limit 100 ;"""
             result = pmysql.query(sql,[searchvalue])
             if result and result is not None:
                 tableData = [{
