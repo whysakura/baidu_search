@@ -31,7 +31,7 @@ class Main(RequestHandler):
                 result = pmysql.query(sql)
             else:
 
-                sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit 100 ;"""
+                sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc;"""
                 result = pmysql.query(sql,[searchvalue])
             if result and result is not None:
                 tableData = [{

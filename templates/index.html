@@ -33,6 +33,7 @@
         methods: {
             baiduSearch: function (val) {
                 clicktotop();
+                this.loading2=true;
                 this.$http.post('/',
                         {
                             currentPage: val,
@@ -42,9 +43,9 @@
                         }
                         ,{emulateJSON: true}).then(function (data) {
                         this.loading2=false;
-                       this.tableData=data.body['tableData'];
-                       this.totals=data.body['totals']
-                       this.currentPage=val
+                        this.tableData=data.body['tableData'];
+                        this.totals=data.body['totals']
+                        this.currentPage=val
 
                 }, function (response) {
                     this.currentPage=val
