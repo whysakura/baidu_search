@@ -21,7 +21,8 @@
                     url: '/',
                     publics: '-',
                     size: '-',
-                    uk_url:'#'
+                    uk_url:'#',
+                    share_time:'-'
                 }],
                 currentPage: 1,
                 searchValue: '',
@@ -108,12 +109,12 @@
                         <span style="margin-left: 10px" v-text="scope.row.c_time"></span>
                     </template>
                 </el-table-column>
-                <el-table-column label="分享人" min-width="200">
+                <el-table-column label="分享人" min-width="150">
                     <template scope="scope">
                         <a style="margin-left: 10px" type="primary" target="_blank" v-text="scope.row.username" v-bind:href="scope.row.uk_url"></a>
                     </template>
                 </el-table-column>
-                <el-table-column label="文件名" min-width="200">
+                <el-table-column label="文件名" min-width="150">
                     <template scope="scope">
                         <el-popover trigger="hover" placement="top">
                             <p v-text="scope.row.server_filename">姓名: </p>
@@ -133,6 +134,11 @@
                 <el-table-column label="大小" width="150">
                     <template scope="scope">
                         <span style="margin-left: 10px" v-text="scope.row.size"></span>
+                    </template>
+                </el-table-column>
+                <el-table-column label="分享时间" width="200">
+                    <template scope="scope">
+                        <span style="margin-left: 10px" v-text="scope.row.share_time"></span>
                     </template>
                 </el-table-column>
                 <el-table-column label="操作" >

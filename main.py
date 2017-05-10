@@ -11,8 +11,10 @@ import tornado.escape
 import tornado.ioloop
 from tornado.web import RequestHandler, Application, url
 
-from utils import MyPyMysql, toMB
+from conf.setting import settings, mysql_config
+from utils import  Logger,MyPyMysql, toMB
 
+mylog = Logger(settings['log_path'])
 
 class Main(RequestHandler):
     def get(self):
@@ -24,7 +26,7 @@ class Main(RequestHandler):
             limit = int(self.get_argument('pageSize'))
             response = {'error':'0'}
             pmysql = MyPyMysql(**mysql_config)
-            sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by id desc limit 300 ;"""
+            sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit 300 ;"""
             result = pmysql.query(sql,[searchvalue])
             if result and result is not None:
                 tableData = [{
@@ -37,7 +39,8 @@ class Main(RequestHandler):
                                 'url':i['base_url']+i['share_url'],
                                 'publics':'是' if i['public']=='1' else '否',
                                 'size':toMB(i['size']),
-                                'uk_url':'https://pan.baidu.com/share/home?uk='+str(i['uk'])
+                                'uk_url':'https://pan.baidu.com/share/home?uk='+str(i['uk']),
+                                'share_time':i['share_time'].strftime("%Y-%m-%d %H:%M:%S") if i['share_time'] is not None else ''
                               } for i in result]
             else:
                 tableData = []
@@ -46,7 +49,8 @@ class Main(RequestHandler):
             response['tableData'] = tableData[start:end]
             response['totals'] = len(tableData)
             self.write(json.dumps(response))
-        except:
+        except Exception as e:
+            mylog.error(e)
             response = {'error':'-1'}
             self.write(json.dumps(response))
         self.finish()
@@ -65,24 +69,7 @@ class MainHandler(RequestHandler):
         self.write("Fetched " + str(response.body) + " entries "
                    "from the FriendFeed API")
 
-settings = {
-    "static_path": os.path.join(os.path.dirname(__file__), "static"),
-    # "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
-    "login_url": "/login",
-    "xsrf_cookies": False,
-    "template_path":os.path.join(os.path.dirname(__file__), "templates"),
-    'debug' : True
 
-}
-mysql_config = {
-    'host': '120.26.214.19',
-    'port': 3306,
-    'user': 'root',
-    'password': 'putao1234',
-    'db': 'pt_db',
-    'charset': 'utf8',
-    'cursorclass': pymysql.cursors.DictCursor
-}
 
 app = Application([
     url(r'/',Main,name='main_url'),
