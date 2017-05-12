@@ -3,9 +3,11 @@
 import logging
 import logging.handlers
 import pymysql
+import time
 
 from conf.setting import settings
 
+now_time = time.strftime('%Y-%m-%d %H:%M:%S')
 
 class Logger(logging.Logger):
     def __init__(self, filename=None):

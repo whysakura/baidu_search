@@ -7,12 +7,14 @@ import pymysql
 
 settings = {
     "static_path": os.path.join(os.path.dirname(os.path.dirname(__file__)), "static"),
-    # "cookie_secret": "__TODO:_GENERATE_YOUR_OWN_RANDOM_VALUE_HERE__",
+    "cookie_secret": "TqSJJ95uQ+Klsn0pmJF3IGwTaU35wEvNucDwCqfYGpU=",
     "login_url": "/login",
-    "xsrf_cookies": False,
+    "xsrf_cookies": True,
     "template_path":os.path.join(os.path.dirname(os.path.dirname(__file__)), "templates"),
     'debug' : True,
-    'log_path':os.path.join(os.path.dirname(os.path.dirname(__file__)), "logger",'error.log')
+    'log_path':os.path.join(os.path.dirname(os.path.dirname(__file__)), "logger",'error.log'),
+    'ipv4':True,
+    'gzip': True,
 
 }
 mysql_config = {

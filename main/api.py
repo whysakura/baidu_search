@@ -1,32 +1,37 @@
 # -*- coding: utf-8 -*-
 # Author:wrd
 import json
-import os
-import random
 
-import pymysql
-import time
+import tornado.escape
 import tornado.gen
 import tornado.httpclient
-import tornado.escape
 import tornado.ioloop
-from tornado.web import RequestHandler, Application, url
+from tornado.httpserver import HTTPServer
+from tornado.netutil import bind_sockets
+from tornado.web import Application, url, authenticated
 
+from base_auth.api import MyBaseHandler, LogoutHandler, LoginHandler
+from common.AuthClass import PageNotFoundHandler, myauthenticated
+from common.utils import  Logger,MyPyMysql, toMB
 from conf.setting import settings, mysql_config
-from utils import  Logger,MyPyMysql, toMB
 
 mylog = Logger(settings['log_path'])
 
-class Main(RequestHandler):
+class Main(MyBaseHandler):
+    @myauthenticated
     def get(self):
-        self.render('index.html')
+        self.set_cookie('_xsrf_token', self.xsrf_token, httponly=True, secure=True)
+        print self.get_current_user()
+        print self.current_user
+        self.render('index.html', user=self.current_user)
     def post(self):
+        pmysql = MyPyMysql(**mysql_config)
         try:
+            print self.request.remote_ip
             current_page = int(self.get_argument('currentPage'))
             searchvalue = '%'+self.get_argument('searchValue','.').encode('utf-8')+'%' if  self.get_argument('searchValue','') else ''
             limit = int(self.get_argument('pageSize'))
             response = {'error':'0'}
-            pmysql = MyPyMysql(**mysql_config)
             start = limit*(current_page-1)
             if not searchvalue:
                 sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit %s,%s ;"""
@@ -61,15 +66,17 @@ class Main(RequestHandler):
             mylog.error(e)
             response = {'error':'-1'}
             self.write(json.dumps(response))
+        finally:
+            pmysql.close_connect()
         self.finish()
 
-class Timo(RequestHandler):
+class Timo(MyBaseHandler):
     def initialize(self,db):
         self.db = db
     def get(self,story_id):
         self.write('this story_id is :%s,db is %s' %(story_id,self.db))
 
-class MainHandler(RequestHandler):
+class MainHandler(MyBaseHandler):
     @tornado.gen.coroutine
     def get(self):
         http = tornado.httpclient.AsyncHTTPClient()
@@ -82,8 +89,20 @@ class MainHandler(RequestHandler):
 app = Application([
     url(r'/',Main,name='main_url'),
     url(r'/stroy/([0-9]+)',Timo,{'db':'haha'},name='story'),
+    url(r'/login', LoginHandler),
+    url(r'/logout', LogoutHandler),
+    url('.*', PageNotFoundHandler)
 ], **settings)
 
+if settings['ipv4']:
+    import socket
+    sockets = bind_sockets(8888, family=socket.AF_INET)
+else:
+    sockets = bind_sockets(8888)
 
-app.listen(8888)
+if not settings['debug']:
+    import tornado.process
+    tornado.process.fork_processes(0)  # 0 表示按 CPU 数目创建相应数目的子进程
+server = HTTPServer(app, xheaders=True)
+server.add_sockets(sockets)
 tornado.ioloop.IOLoop.current().start()
