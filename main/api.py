@@ -10,6 +10,7 @@ from tornado.httpserver import HTTPServer
 from tornado.netutil import bind_sockets
 from tornado.web import Application, url
 
+from base_auth.api import LoginHandler, LogoutHandler
 from conf.setting import settings, mysql_config
 from common.utils import Logger, MyPyMysql, toMB
 from common.AuthClass import MyBaseHandler, myauthenticated, PageNotFoundHandler
@@ -90,9 +91,9 @@ class MainHandler(MyBaseHandler):
 
 app = Application([
     url(r'/', Main, name='main_url'),
-    # url(r'/stroy/([0-9]+)',Timo,{'db':'haha'},name='story'),
-    # url(r'/login', LoginHandler),
-    # url(r'/logout', LogoutHandler),
+    url(r'/stroy/([0-9]+)',Timo,{'db':'haha'},name='story'),
+    url(r'/login', LoginHandler),
+    url(r'/logout', LogoutHandler),
     url('.*', PageNotFoundHandler)
 ], **settings)
 
