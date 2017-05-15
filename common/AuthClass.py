@@ -3,7 +3,7 @@
 # @Author  : wrd
 import functools
 import tornado
-from tornado.web import RequestHandler
+from tornado.web import RequestHandler, HTTPError
 from common.utils import MyPyMysql, now_time
 from conf.setting import mysql_config
 
@@ -23,7 +23,7 @@ class MyBaseHandler(RequestHandler):
 
 class PageNotFoundHandler(MyBaseHandler):
     def get(self):
-        raise tornado.web.HTTPError(404)
+        raise HTTPError(404)
 
 
 def add_tourist(remote_ip):
