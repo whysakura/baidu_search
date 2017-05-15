@@ -2,7 +2,6 @@
 # @Time    : 2017/5/12 16:14
 # @Author  : wrd
 import functools
-import tornado
 from tornado.web import RequestHandler, HTTPError
 from common.utils import MyPyMysql, now_time
 from conf.setting import mysql_config
