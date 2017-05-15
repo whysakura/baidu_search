@@ -9,7 +9,8 @@ import tornado.ioloop
 from tornado.httpserver import HTTPServer
 from tornado.netutil import bind_sockets
 from tornado.web import Application, url
-from common.AuthClass import PageNotFoundHandler, myauthenticated, MyBaseHandler
+
+from common.AuthClass import MyBaseHandler, myauthenticated, PageNotFoundHandler
 from common.utils import Logger, MyPyMysql, toMB
 from conf.setting import settings, mysql_config
 
