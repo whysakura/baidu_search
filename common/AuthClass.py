@@ -66,5 +66,7 @@ def myauthenticated(method):
             #     self.redirect(url)
             #     return
             # raise HTTPError(403)
+        else:
+            self.uname = self.get_current_user()
         return method(self, *args, **kwargs)
     return wrapper

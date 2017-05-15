@@ -21,13 +21,10 @@ class Main(MyBaseHandler):
     @myauthenticated
     def get(self):
         self.set_cookie('_xsrf_token', self.xsrf_token, httponly=True, secure=True)
-        print self.get_current_user()
-        print self.current_user
-        self.render('index.html', user=self.current_user)
+        self.render('index.html', user=self.uname)
     def post(self):
         pmysql = MyPyMysql(**mysql_config)
         try:
-            print self.request.remote_ip
             current_page = int(self.get_argument('currentPage'))
             searchvalue = '%'+self.get_argument('searchValue','.').encode('utf-8')+'%' if  self.get_argument('searchValue','') else ''
             limit = int(self.get_argument('pageSize'))
@@ -88,9 +85,9 @@ class MainHandler(MyBaseHandler):
 
 app = Application([
     url(r'/',Main,name='main_url'),
-    url(r'/stroy/([0-9]+)',Timo,{'db':'haha'},name='story'),
-    url(r'/login', LoginHandler),
-    url(r'/logout', LogoutHandler),
+    # url(r'/stroy/([0-9]+)',Timo,{'db':'haha'},name='story'),
+    # url(r'/login', LoginHandler),
+    # url(r'/logout', LogoutHandler),
     url('.*', PageNotFoundHandler)
 ], **settings)
 
