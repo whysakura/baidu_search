@@ -2,13 +2,8 @@
 # @Time    : 2017/5/12 16:14
 # @Author  : wrd
 import functools
-import json
-import urlparse
-from urllib import urlencode
-
 import tornado
-from tornado.web import RequestHandler, HTTPError
-
+from tornado.web import RequestHandler
 from common.utils import MyPyMysql, now_time
 from conf.setting import mysql_config
 
@@ -25,9 +20,11 @@ class MyBaseHandler(RequestHandler):
     def get_current_user(self):
         return self.get_secure_cookie("username")
 
+
 class PageNotFoundHandler(MyBaseHandler):
     def get(self):
         raise tornado.web.HTTPError(404)
+
 
 def add_tourist(remote_ip):
     """
@@ -40,7 +37,6 @@ def add_tourist(remote_ip):
     sql = """select id from pt_db.spide_user_id where ip = %s;"""
     result = pmysql.query(sql, (remote_ip))
     return '游客 ' + str(result[0]['id'])
-
 
 
 def myauthenticated(method):
@@ -69,4 +65,5 @@ def myauthenticated(method):
         else:
             self.uname = self.get_current_user()
         return method(self, *args, **kwargs)
+
     return wrapper
