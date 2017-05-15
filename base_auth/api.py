@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Time    : 2017/5/12 15:47
 # @Author  : wrd
-from tornado.web import  authenticated
-
 from common.AuthClass import MyBaseHandler
 
 
