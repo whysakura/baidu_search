@@ -10,9 +10,9 @@ from tornado.httpserver import HTTPServer
 from tornado.netutil import bind_sockets
 from tornado.web import Application, url
 
-from common.AuthClass import MyBaseHandler, myauthenticated, PageNotFoundHandler
 from common.utils import Logger, MyPyMysql, toMB
 from conf.setting import settings, mysql_config
+from common.AuthClass import MyBaseHandler, myauthenticated, PageNotFoundHandler
 
 mylog = Logger(settings['log_path'])
 
