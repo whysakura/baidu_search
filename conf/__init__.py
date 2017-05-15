@@ -1,2 +1,3 @@
 # -*- coding: utf-8 -*-
-# Author:wrd 
+# Author:wrd
+__all__ = ["setting"]
