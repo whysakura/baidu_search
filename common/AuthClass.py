@@ -9,12 +9,7 @@ from conf.setting import mysql_config
 
 class MyBaseHandler(RequestHandler):
     def write_error(self, status_code, **kwargs):
-        if status_code == 404:
-            self.render('404.html')
-        elif status_code == 500:
-            self.render('500.html')
-        else:
-            super(MyBaseHandler, self).write_error(status_code, **kwargs)
+        self.render('500.html',user=self.get_current_user(),status_code=status_code)
 
     def get_current_user(self):
         return self.get_secure_cookie("username")

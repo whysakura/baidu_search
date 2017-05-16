@@ -19,8 +19,8 @@ from main.api import Main, Timo
 app = Application([
     url(r'/', Main, name='main_url'),
     url(r'/stroy/([0-9]+)',Timo,{'db':'haha'},name='story'),
-    url(r'/login', LoginHandler),
-    url(r'/logout', LogoutHandler),
+    # url(r'/login', LoginHandler),
+    # url(r'/logout', LogoutHandler),
     url('.*', PageNotFoundHandler)
 ], **settings)
 

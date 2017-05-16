@@ -5,11 +5,18 @@ import logging.handlers
 import pymysql
 import time
 
+import redis
+
 from conf.setting import settings
 
 now_time = time.strftime('%Y-%m-%d %H:%M:%S')
 
 class Logger(logging.Logger):
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls,'_inst'):
+            cls._inst = super(Logger,cls).__new__(cls,*args,**kwargs)
+        return cls._inst
+
     def __init__(self, filename=None):
         super(Logger, self).__init__(self)
         # 日志文件名
@@ -96,3 +103,42 @@ def toMB(num):
         return str(round(num/1024.0,2)) + 'KB'
     else:
         return str(round(num/1048576.0, 2)) + 'M'
+
+
+def _unicode(s):
+    if isinstance(s, str):
+        try:
+            return s.decode('utf-8')
+        except UnicodeDecodeError:
+            pass
+    return s
+
+class RedisPool(object):
+    def __new__(cls, *args, **kwargs):
+        if not hasattr(cls,'_inst'):
+            cls._inst = super(RedisPool,cls).__new__(cls,*args,**kwargs)
+        return cls._inst
+
+    def __init__(self,**kwargs):
+        self.pool = redis.ConnectionPool(**kwargs)
+
+    def redis(self):
+        rd = redis.Redis(connection_pool=self.pool)
+        return rd
+
+if __name__ =='__main__':
+    conf = {
+        'host':'45.76.187.121',
+        'port':6379,
+        'password': 'w1314921',
+        'db':0,
+        'decode_responses':True
+    }
+    a = RedisPool(**conf).redis()
+    dic = {"id": "1", "name": u"我是第一个用户"}
+    iddic = {"id": "1", "name": u"我是第一个用户"}
+    a.hmset("token001", dic)
+    a.hmset("user_1", iddic)
+    b=a.hgetall("token001")
+    print(b)
+    print(b['b'])

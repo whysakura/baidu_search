@@ -26,3 +26,11 @@ mysql_config = {
     'charset': 'utf8',
     'cursorclass': pymysql.cursors.DictCursor
 }
+
+redis_conf = {
+    'host': '45.76.187.121',
+    'port': 6379,
+    'password': 'w1314921',
+    'db':0,
+    'decode_responses':True
+}
