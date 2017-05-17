@@ -11,8 +11,8 @@ from tornado.netutil import bind_sockets
 from tornado.web import Application, url
 
 from base_auth.api import LoginHandler, LogoutHandler
-from conf.setting import settings, mysql_config
-from common.utils import Logger, MyPyMysql, toMB
+from conf.setting import settings, mysql_config, redis_conf
+from common.utils import Logger, MyPyMysql, toMB, timestamptotime
 from common.AuthClass import MyBaseHandler, myauthenticated, PageNotFoundHandler
 
 mylog = Logger(settings['log_path'])
@@ -34,34 +34,66 @@ class Main(MyBaseHandler):
             response = {'error': '0'}
             start = limit * (current_page - 1)
             if not searchvalue:
-                sql = """SELECT * FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit %s,%s ;"""
+                sql = """SELECT id,server_filename,username,UNIX_TIMESTAMP(share_time) as share_time,
+                          UNIX_TIMESTAMP(c_time) as c_time,base_url,uk,share_url,
+                          `public`,`size`
+                          FROM pt_db.spide_shares where share_time is not null  order by share_time desc limit %s,%s ;"""
                 result = pmysql.query(sql, [start, limit])
                 sql = """SELECT case when count(1) >100 then 100 else count(1) end as c FROM pt_db.spide_shares where share_time is not null;"""
                 sumcount = pmysql.query(sql)
+                if result and result is not None:
+                    tableData = [{
+                                     'id': i['id'],
+                                     'c_time': timestamptotime(i['c_time']),
+                                     'uk': i['uk'],
+                                     'username': i['username'],
+                                     'server_filename_short': i['server_filename'][:12] + '...',
+                                     'server_filename': i['server_filename'],
+                                     'url': i['base_url'] + i['share_url'],
+                                     'publics': '是' if i['public'] == '1' else '否',
+                                     'size': toMB(i['size']),
+                                     'uk_url': 'https://pan.baidu.com/share/home?uk=' + str(i['uk']),
+                                     'share_time': timestamptotime(i['share_time'])
+                                 } for i in result]
+                else:
+                    tableData = []
+
+                response['totals'] = sumcount[0]['c']
             else:
-                sql = """SELECT * FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit %s,%s;"""
-                result = pmysql.query(sql, [searchvalue, start, limit])
-                sql = """SELECT count(1) as c FROM pt_db.spide_shares where server_filename like %s ;"""
-                sumcount = pmysql.query(sql, [searchvalue])
-            if result and result is not None:
+                from sphinxapi import *
+                cl = SphinxClient()
+                cl.SetServer(redis_conf['host'], 9312)  # 主机与端口
+                cl.SetSortMode(SPH_SORT_EXTENDED, "share_time DESC")
+                cl.SetMatchMode(SPH_MATCH_EXTENDED2)
+                cl.SetLimits(start, limit)
+                searchvalue = searchvalue.replace(' ','').replace(' ','&')
+                res = cl.Query(searchvalue, 'app')
+                mylog.info('查找- ' + searchvalue)
+                if res['error']:
+                    mylog.error(res['error'])
+                sumcount = res['total']
                 tableData = [{
                                  'id': i['id'],
-                                 'c_time': i['c_time'].strftime("%Y-%m-%d %H:%M:%S"),
-                                 'uk': i['uk'],
-                                 'username': i['username'],
-                                 'server_filename_short': i['server_filename'][:12] + '...',
-                                 'server_filename': i['server_filename'],
-                                 'url': i['base_url'] + i['share_url'],
-                                 'publics': '是' if i['public'] == '1' else '否',
-                                 'size': toMB(i['size']),
-                                 'uk_url': 'https://pan.baidu.com/share/home?uk=' + str(i['uk']),
-                                 'share_time': i['share_time'].strftime("%Y-%m-%d %H:%M:%S") if i[
-                                                                                                    'share_time'] is not None else ''
-                             } for i in result]
-            else:
-                tableData = []
+                                 'c_time': timestamptotime(i['attrs']['c_time']),
+                                 'uk': i['attrs']['uk'],
+                                 'username':  i['attrs']['username'].decode('utf-8'),
+                                 'server_filename_short': i['attrs']['server_filename'].decode('utf-8')[:12] + '...',
+                                 'server_filename': i['attrs']['server_filename'].decode('utf-8'),
+                                 'url': i['attrs']['base_url'] + i['attrs']['share_url'],
+                                 'publics': '是' if i['attrs']['public'] == '1' else '否',
+                                 'size': toMB(i['attrs']['size']),
+                                 'uk_url': 'https://pan.baidu.com/share/home?uk=' + str(i['attrs']['uk']),
+                                 'share_time': timestamptotime(i['attrs']['share_time'])
+                             } for i in res['matches']]
+                # sql = """SELECT id,server_filename,username,UNIX_TIMESTAMP(share_time) as share_time,
+                #           UNIX_TIMESTAMP(c_time) as c_time,base_url,uk,share_url,
+                #           `public`,`size` FROM pt_db.spide_shares where server_filename like %s order by share_time desc limit %s,%s;"""
+                # result = pmysql.query(sql, [searchvalue, start, limit])
+                # sql = """SELECT count(1) as c FROM pt_db.spide_shares where server_filename like %s ;"""
+                # sumcount = pmysql.query(sql, [searchvalue])
+
+                response['totals'] = sumcount
             response['tableData'] = tableData
-            response['totals'] = sumcount[0]['c']
             self.write(json.dumps(response))
         except Exception as e:
             mylog.error(e)

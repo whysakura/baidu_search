@@ -126,6 +126,17 @@ class RedisPool(object):
         rd = redis.Redis(connection_pool=self.pool)
         return rd
 
+def timestamptotime(num):
+    """
+    时间戳转时间
+    :param num:
+    :return:
+    """
+    if num is None or not num:
+        return ''
+    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(num))
+
+
 if __name__ =='__main__':
     conf = {
         'host':'45.76.187.121',
