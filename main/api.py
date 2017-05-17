@@ -28,7 +28,7 @@ class Main(MyBaseHandler):
         pmysql = MyPyMysql(**mysql_config)
         try:
             current_page = int(self.get_argument('currentPage'))
-            searchvalue = '%' + self.get_argument('searchValue', '.').encode('utf-8') + '%' if self.get_argument(
+            searchvalue = self.get_argument('searchValue', '.').encode('utf-8') if self.get_argument(
                 'searchValue', '') else ''
             limit = int(self.get_argument('pageSize'))
             response = {'error': '0'}
