@@ -34,3 +34,7 @@ redis_conf = {
     'db':0,
     'decode_responses':True
 }
+# 等待结束时间
+MAX_WAIT_SECONDS_BEFORE_SHUTDOWN = 5
+# 监听端口
+LISTEN_PORT = 8888

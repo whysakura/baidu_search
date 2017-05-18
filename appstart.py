@@ -2,6 +2,7 @@
 # @Time    : 2017/5/15 10:43
 # @Author  : wrd
 import json
+from functools import partial
 
 import tornado.escape
 import tornado.gen
@@ -10,10 +11,11 @@ import tornado.ioloop
 from tornado.httpserver import HTTPServer
 from tornado.netutil import bind_sockets
 from tornado.web import Application, url
-
+import signal
 from base_auth.api import LoginHandler, LogoutHandler
 from common.AuthClass import PageNotFoundHandler
-from conf.setting import settings
+from common.SignHandler import sig_handler
+from conf.setting import settings, LISTEN_PORT
 from main.api import Main, Timo
 
 app = Application([
@@ -27,9 +29,9 @@ app = Application([
 if settings['ipv4']:
     import socket
 
-    sockets = bind_sockets(8888, family=socket.AF_INET)
+    sockets = bind_sockets(LISTEN_PORT, family=socket.AF_INET)
 else:
-    sockets = bind_sockets(8888)
+    sockets = bind_sockets(LISTEN_PORT)
 
 if not settings['debug']:
     import tornado.process
@@ -37,4 +39,7 @@ if not settings['debug']:
     tornado.process.fork_processes(0)  # 0 表示按 CPU 数目创建相应数目的子进程
 server = HTTPServer(app, xheaders=True)
 server.add_sockets(sockets)
+
+signal.signal(signal.SIGTERM, partial(sig_handler, server))
+signal.signal(signal.SIGINT, partial(sig_handler, server))
 tornado.ioloop.IOLoop.current().start()
