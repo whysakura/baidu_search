@@ -3,7 +3,7 @@
 # @Author  : wrd
 import functools
 from tornado.web import RequestHandler, HTTPError
-from common.utils import MyPyMysql, now_time
+from common.utils import MyPyMysql, getnowtime
 from conf.setting import mysql_config
 
 
@@ -27,7 +27,7 @@ def add_tourist(remote_ip):
     """
     pmysql = MyPyMysql(**mysql_config)
     sql = """insert into pt_db.spide_user_id (ip) values (%s) ON DUPLICATE KEY UPDATE  m_time = %s;"""
-    pmysql.query(sql, (remote_ip, now_time))
+    pmysql.query(sql, (remote_ip, getnowtime()))
     sql = """select id from pt_db.spide_user_id where ip = %s;"""
     result = pmysql.query(sql, (remote_ip))
     return '游客 ' + str(result[0]['id'])

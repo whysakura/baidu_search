@@ -4,12 +4,12 @@ import logging
 import logging.handlers
 import pymysql
 import time
-
+import pytz
+import datetime
 import redis
 
 from conf.setting import settings
 
-now_time = time.strftime('%Y-%m-%d %H:%M:%S')
 
 class Logger(logging.Logger):
     def __new__(cls, *args, **kwargs):
@@ -134,8 +134,16 @@ def timestamptotime(num):
     """
     if num is None or not num:
         return ''
-    return time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(num))
+    tz = pytz.timezone('Asia/Shanghai')
+    return datetime.datetime.fromtimestamp(num, tz).strftime("%Y-%m-%d %H:%M:%S")
 
+def getnowtime():
+    """
+    获取中国现在时间
+    :return:
+    """
+    tz = pytz.timezone('Asia/Shanghai')
+    return datetime.datetime.now(tz).strftime("%Y-%m-%d %H:%M:%S")
 
 if __name__ =='__main__':
     conf = {
